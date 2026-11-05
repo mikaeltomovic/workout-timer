@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+
+# Expo and React Native tooling
+.expo/
+.expo-shared/
+web-build/
+dist/
+
+# Native build output (keep native project configuration/source trackable)
+android/.gradle/
+android/.idea/
+android/app/build/
+android/build/
+android/local.properties
+ios/Pods/
+ios/build/
+ios/DerivedData/
+
+# Test, coverage, and tool caches
+coverage/
+.jest/
+.eslintcache
+.turbo/
+
+# Local environment and credentials
+.env
+.env.*.local
+*.keystore
+*.jks
+*.p8
+*.p12
+*.mobileprovision
+GoogleService-Info.plist
+google-services.json
+
+# Editor and operating system files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*.swo
