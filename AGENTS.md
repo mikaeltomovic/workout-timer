@@ -9,6 +9,8 @@
 ## Engineering principles
 
 - Use TypeScript strict mode and current, supported React Native, Expo, and Android APIs.
+- Use `nvm use` from the repository root and follow the version pinned in `.nvmrc`.
+- Use Expo Continuous Native Generation for generated native projects; keep custom native module source under `modules/` and generated `android/` and `ios/` directories out of version control.
 - Keep domain logic deterministic, platform-neutral, and independently testable.
 - Use absolute deadlines based on a platform monotonic clock for workout timing. JavaScript interval counters must not be the source of truth for an active Android workout.
 - Android background session execution and audio belong in the native Android session implementation, independent of React Native rendering.

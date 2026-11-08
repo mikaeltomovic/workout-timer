@@ -6,16 +6,14 @@ node_modules/
 .expo-shared/
 web-build/
 dist/
+expo-env.d.ts
 
-# Native build output (keep native project configuration/source trackable)
-android/.gradle/
-android/.idea/
-android/app/build/
-android/build/
-android/local.properties
-ios/Pods/
-ios/build/
-ios/DerivedData/
+# Continuous Native Generation: native projects are generated from app config/plugins.
+# Keep custom native module source under modules/ tracked instead.
+/android
+/ios
+.kotlin/
+*.orig.*
 
 # Test, coverage, and tool caches
 coverage/

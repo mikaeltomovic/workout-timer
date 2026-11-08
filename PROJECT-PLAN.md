@@ -2,10 +2,11 @@
 
 ## Product Specification & Technical Implementation Plan
 
-**Version:** 1.4 (working draft)
+**Version:** 1.5 (working draft)
 **Initial platform:** Android
 **Future platform consideration:** iOS may be added later
 **Framework:** React Native + Expo + TypeScript
+**Initial toolchain baseline:** Expo SDK 58, Node.js 24.22.2 (`.nvmrc`), Java 17
 **Storage:** Local device storage
 **Connectivity:** Offline-first
 
@@ -451,14 +452,8 @@ Organize by shared product/domain code and platform-specific adapters from the s
 
 ```text
 workout-timer/
-├── app/                              # Shared Expo Router screens/routes
-│   ├── index.tsx
-│   ├── workouts/
-│   │   ├── new.tsx
-│   │   └── [id].tsx
-│   └── session/
-│       └── [id].tsx
 ├── src/
+│   ├── app/                          # Shared Expo Router screens/routes
 │   ├── components/                   # Shared UI components
 │   ├── features/
 │   │   ├── workouts/                 # Library/editor flows
@@ -480,7 +475,8 @@ workout-timer/
 ├── modules/
 │   └── workout-session/
 │       └── android/                  # Android service, bridge, audio, notification
-├── ios/                              # Generated/native iOS project when iOS work begins
+├── ios/                              # Generated native project (ignored by Git)
+├── android/                          # Generated native project (ignored by Git)
 ├── tests/                            # Domain/controller contract tests
 ├── docs/
 │   ├── ARCHITECTURE.md
@@ -492,7 +488,7 @@ workout-timer/
 └── .gitignore
 ```
 
-Do not create placeholder iOS native code or claim iOS background support before its behavior is designed and tested. Expo prebuild/native directories may be generated or managed according to the chosen build workflow; document that choice. Adjust the structure if the implementation remains simpler without weakening the shared/platform boundary.
+Do not create placeholder iOS native code or claim iOS background support before its behavior is designed and tested. Use Expo Continuous Native Generation: generated `android/` and `ios/` directories are ignored by Git, while custom native module source under `modules/` and app configuration remain tracked. Adjust the structure if the implementation remains simpler without weakening the shared/platform boundary.
 
 ---
 
@@ -504,6 +500,7 @@ Build incrementally. Validate Android background execution early, before extensi
 
 - Inspect Node.js, Java, Android SDK, Android Studio, and Expo tooling.
 - Initialize Expo React Native project, TypeScript strict mode, and Expo Router.
+- Use the current stable Expo SDK and keep the Node.js version pinned in `.nvmrc`.
 - Establish shared/platform-specific module boundaries.
 - Configure Android package identifier, lint/format, and unit tests.
 - Establish readable, non-minified source conventions and production build/minification workflow.
