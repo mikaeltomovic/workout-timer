@@ -12,7 +12,7 @@
 
 > This document is the working product and implementation plan. Items marked **Decision to confirm** should be resolved before the affected implementation phase. Defaults below make the plan actionable while preserving those decisions for review.
 
-**Implementation status (2026-11-10):** The shared workout model, validation, duration calculation, formatting, and deterministic phase state machine have unit coverage. The Android foreground service receives workout configuration and owns phase deadlines and transitions using elapsed realtime. The API 37 emulator has verified the earlier timer to completion while locked and the current phase service changing phases and updating its notification while locked. Physical-device reliability, a full locked workout, audio, and call interruption behavior remain unverified. The Android service currently declares `specialUse` for a user-started timer; Google Play reviews this justification, so confirm release-policy eligibility before committing to a store release.
+**Implementation status (2026-11-10):** The shared workout model, validation, duration calculation, formatting, deterministic phase state machine, audio preference resolution, and phase-entry cue-intent scheduling have unit coverage. Cue intents include independently enabled voice/beep cues, stable identifiers, phase announcements, and deadline-based countdown/warning timing. The Android foreground service receives workout configuration and owns phase deadlines and transitions using elapsed realtime. The API 37 emulator has verified the earlier timer to completion while locked and the current phase service changing phases and updating its notification while locked. Android speech/beep playback, physical-device reliability, a full locked workout, and call interruption behavior remain unverified. The Android service currently declares `specialUse` for a user-started timer; Google Play reviews this justification, so confirm release-policy eligibility before committing to a store release.
 
 ---
 
@@ -233,7 +233,7 @@ Example: I=10, E=40, R=20, S=5, V=60, C=3 yields 970 seconds (16 minutes 10 seco
 
 # 6. Audio Cue System
 
-Audio is optional and controlled by user preference. Voice cues and beeps have separate effective settings, each resolved from a workout override when present or from the global setting otherwise. If a cue type is disabled, do not schedule or play any cues of that type. Audio rendering is platform-specific; cue intent and scheduling rules should be shared where practical, while actual speech and sound playback run through the platform session adapter.
+Audio is optional and controlled by user preference. Voice cues and beeps have separate effective settings, each resolved from a workout override when present or from the global setting otherwise. If a cue type is disabled, do not schedule or play any cues of that type. Audio rendering is platform-specific; cue intent and scheduling rules should be shared where practical, while actual speech and sound playback run through the platform session adapter. The shared cue planner schedules phase-entry announcements, a final-eight-second transition warning when applicable, and beeps at three, two, and one seconds remaining for phases long enough to include them. Cue consumers must treat identifiers as idempotency keys so late or duplicate scheduler callbacks do not replay a cue.
 
 ## 6.0 Audio mixing with other apps
 

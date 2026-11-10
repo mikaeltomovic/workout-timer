@@ -4,7 +4,7 @@ An offline-first interval workout timer for Android, planned with a shared React
 
 ## Project status
 
-The shared workout model, validation, duration calculation, duration display, and deterministic phase state machine are implemented and covered by unit tests. The Android foreground service receives workout configuration and owns phase deadlines and transitions, service snapshots, and notification controls. The API 37 emulator has verified the earlier timer to completion while locked and the current phase service changing phases and updating its notification while locked. Physical-device reliability, full locked-workout behavior, and audio checks are still outstanding. Product requirements and phased implementation details are in [PROJECT-PLAN.md](PROJECT-PLAN.md).
+The shared workout model, validation, duration calculation, duration display, deterministic phase state machine, audio preference resolution, and phase-entry cue-intent scheduling are implemented and covered by unit tests. The Android foreground service receives workout configuration and owns phase deadlines and transitions, service snapshots, and notification controls. The API 37 emulator has verified the earlier timer to completion while locked and the current phase service changing phases and updating its notification while locked. Android speech/beep playback, physical-device reliability, full locked-workout behavior, and audio mixing checks are still outstanding. Product requirements and phased implementation details are in [PROJECT-PLAN.md](PROJECT-PLAN.md).
 
 ## Planned capabilities
 

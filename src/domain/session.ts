@@ -96,6 +96,22 @@ export function resetSession(session: WorkoutSessionSnapshot): WorkoutSessionSna
   return createSession(session.configuration);
 }
 
+export function getNextPhase(session: WorkoutSessionSnapshot): WorkoutPhase | undefined {
+  if (session.phase === 'completed') return undefined;
+  let next = transition(session);
+  let skipped = 0;
+  while (next.phase !== 'completed' && getPhaseDurationSeconds(next.configuration, next.phase) === 0) {
+    if (skipped >= MAX_ZERO_PHASE_SKIPS) throw new RangeError('Too many zero-duration transitions while advancing a workout.');
+    next = transition(next);
+    skipped += 1;
+  }
+  return next.phase === 'completed' ? undefined : next.phase;
+}
+
+export function getPhaseDurationSeconds(configuration: WorkoutConfiguration, phase: WorkoutPhase): number {
+  return durationFor(configuration, phase);
+}
+
 function advanceOnePhase(
   session: WorkoutSessionSnapshot,
   baseElapsedRealtime: number,

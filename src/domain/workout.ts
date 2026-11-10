@@ -5,6 +5,13 @@ export type WorkoutAudioPreferences = {
   finalCountdownBeeps: boolean | null;
 };
 
+export type GlobalAudioPreferences = {
+  voiceCues: boolean;
+  finalCountdownBeeps: boolean;
+};
+
+export type EffectiveAudioPreferences = GlobalAudioPreferences;
+
 export type WorkoutConfiguration = {
   name: string;
   initialCountdownSeconds: number;
