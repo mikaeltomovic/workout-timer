@@ -12,7 +12,7 @@
 
 > This document is the working product and implementation plan. Items marked **Decision to confirm** should be resolved before the affected implementation phase. Defaults below make the plan actionable while preserving those decisions for review.
 
-**Implementation status (2026-11-10):** The shared workout model, validation, duration calculation, formatting, deterministic phase state machine, audio preference resolution, and phase-entry cue-intent scheduling have unit coverage. Cue intents include independently enabled voice/beep cues, stable identifiers, phase announcements, and deadline-based countdown/warning timing. The Android foreground service receives workout configuration and owns phase deadlines and transitions using elapsed realtime. The API 37 emulator has verified the earlier timer to completion while locked and the current phase service changing phases and updating its notification while locked. Android speech/beep playback, physical-device reliability, a full locked workout, and call interruption behavior remain unverified. The Android service currently declares `specialUse` for a user-started timer; Google Play reviews this justification, so confirm release-policy eligibility before committing to a store release.
+**Implementation status (2026-11-10):** The shared workout model, validation, duration calculation, deterministic phase state machine, audio preference resolution/cue scheduling, and versioned local workout/preferences storage have unit coverage. The Android foreground service owns deadlines, transitions, speech/beep scheduling, notifications, call-state pause behavior, and a partial wake lock held only during a running session. The API 37 emulator has verified workout creation/persistence across app restart, active-screen navigation and controls, phase/notification updates while locked, and wake-lock release on stop. Native cue planning has six passing JVM tests. Speech/beep delivery and call interruption are implemented but still need physical-device verification with music and an actual call. The wake lock keeps deadline callbacks timely during device sleep and can affect battery life; it is released on pause, stop, completion, and service teardown. The Android service currently declares `specialUse` for a user-started timer; Google Play reviews this justification, so confirm release-policy eligibility before a store release.
 
 ---
 
@@ -363,7 +363,7 @@ Android Workout Foreground Service
       +-- Persistent notification and actions
 ```
 
-The Android service must start for an active workout, retain session state independently of React Native rendering, expose snapshots, support pause/resume/skip/stop, show an ongoing notification, and stop on completion or stop.
+The Android service must start for an active workout, retain session state independently of React Native rendering, expose snapshots, support pause/resume/skip/stop, show an ongoing notification, and stop on completion or stop. A partial wake lock is acquired only while the active session is running, because Android handlers use uptime while the workout deadline uses elapsed realtime across sleep. The lock is released on pause, stop, completion, invalid-session cleanup, and service destruction; holding it during a workout can increase battery use.
 
 Investigate current foreground-service type, permissions, notification permission/channel, TextToSpeech lifecycle, audio focus, target SDK requirements, and manufacturer battery restrictions. Do not assume a JavaScript background task is sufficient.
 

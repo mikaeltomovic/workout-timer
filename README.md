@@ -4,7 +4,7 @@ An offline-first interval workout timer for Android, planned with a shared React
 
 ## Project status
 
-The shared workout model, validation, duration calculation, duration display, deterministic phase state machine, audio preference resolution, and phase-entry cue-intent scheduling are implemented and covered by unit tests. The Android foreground service receives workout configuration and owns phase deadlines and transitions, service snapshots, and notification controls. The API 37 emulator has verified the earlier timer to completion while locked and the current phase service changing phases and updating its notification while locked. Android speech/beep playback, physical-device reliability, full locked-workout behavior, and audio mixing checks are still outstanding. Product requirements and phased implementation details are in [PROJECT-PLAN.md](PROJECT-PLAN.md).
+The app now has a local workout library/editor, versioned JSON documents backed by AsyncStorage, global audio/theme settings, a large active workout screen, and an Android foreground session service with native speech/beep scheduling and call-state pause handling. The API 37 emulator has verified workout creation and persistence across app restart, active-screen navigation and controls, phase/notification updates while locked, and wake-lock release on stop. Automated checks cover 39 TypeScript tests and 6 native phase/audio-planner tests. Physical-device audio mixing, call interruption, long-session reliability, and battery behavior still need testing before a beta. See [PROJECT-PLAN.md](PROJECT-PLAN.md) for requirements and release constraints.
 
 ## Planned capabilities
 
@@ -43,7 +43,7 @@ For a local Android development build:
 npx expo run:android
 ```
 
-The app uses Expo Router with routes under `src/app`. On Android, the home screen currently exposes a two-cycle sample workout for exercising the native service; this is temporary development UI, not the finished workout library.
+The app uses Expo Router with a library/settings tab group and stack routes for workout editing and the active session. Workouts and preferences are stored locally and are available offline.
 
 ### Native project workflow
 
@@ -66,9 +66,17 @@ cd android
 ./gradlew :workout-session:testDebugUnitTest
 ```
 
-Release build workflows will be finalized as Phase 1 continues. See [PROJECT-PLAN.md](PROJECT-PLAN.md) for implementation phases and acceptance criteria. Cloud builds are optional; Android builds can be performed locally.
+Create a standalone Android alpha APK with:
 
-Custom native Android source lives in `modules/workout-session`; generated `android/` and `ios/` directories remain ignored under the Expo Continuous Native Generation workflow. The foreground service currently uses Android's `specialUse` type for a user-started workout timer. Google Play reviews the declared reason for this type; release eligibility must be checked against current Play policy. Physical-device checks for lock-screen timing, notification behavior, audio mixing, and interruptions are still outstanding.
+```sh
+npx expo prebuild --platform android
+cd android
+./gradlew assembleRelease
+```
+
+The APK is written to `android/app/build/outputs/apk/release/app-release.apk`. The generated Android project remains ignored by Git. This local alpha build is suitable for sideload testing; configure a protected release signing key and Play policy eligibility before distribution. Production Gradle builds bundle/minify JavaScript while repository source remains readable.
+
+Custom native Android source lives in `modules/workout-session`; generated `android/` and `ios/` directories remain ignored under Expo Continuous Native Generation. The foreground service uses Android's `specialUse` type, which Google Play reviews. Starting a workout requests notification permission and phone-state access; the latter enables silent auto-pause on telephony calls and does not read phone numbers. A partial wake lock is held only during a running session so scheduled cues and transitions can run while the screen is off; this can affect battery life. Physical-device checks for audio mixing, phone-call behavior, and battery use remain outstanding.
 
 ## License
 

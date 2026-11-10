@@ -5,6 +5,31 @@ import org.junit.Test
 
 class WorkoutPhaseMachineTest {
   @Test
+  fun `creates phase audio cues in announcement order and at deadline offsets`() {
+    val planner = WorkoutAudioCuePlanner()
+    val plan = WorkoutPlan(0, 12, 0, 1, 0, 2)
+    val phase = WorkoutPhaseMachine().initial(plan)
+    val cues = planner.cues(plan, phase, 1_000L, AudioCuePreferences(true, true))
+
+    assertEquals(
+      listOf("voice:Get ready", "voice:Cycle 1 out of 2", "voice:Last set", "voice:Exercise", "voice:Exercise coming up", "beep:3", "beep:2", "beep:1"),
+      cues.map { cue -> if (cue is WorkoutAudioCue.Voice) "voice:${cue.message}" else "beep:${(cue as WorkoutAudioCue.Beep).remainingSeconds}" },
+    )
+    assertEquals(listOf(1_000L, 1_000L, 1_000L, 1_000L, 10_000L, 11_000L, 12_000L, 5_000L).sorted(), cues.map { it.dueElapsedRealtime }.sorted())
+  }
+
+  @Test
+  fun `suppresses cue types independently and omits warnings at eight seconds`() {
+    val planner = WorkoutAudioCuePlanner()
+    val plan = WorkoutPlan(0, 8, 0, 1, 0, 2)
+    val phase = WorkoutPhaseMachine().initial(plan)
+
+    assertEquals(emptyList<WorkoutAudioCue>(), planner.cues(plan, phase, 0L, AudioCuePreferences(false, false)))
+    assertEquals(3, planner.cues(plan, phase, 0L, AudioCuePreferences(false, true)).size)
+    assertEquals(0, planner.cues(plan, phase, 0L, AudioCuePreferences(true, false)).count { it is WorkoutAudioCue.Voice && it.message.endsWith("coming up") })
+  }
+
+  @Test
   fun `uses recovery after the last set and finishes without a final break`() {
     val machine = WorkoutPhaseMachine()
     val plan = WorkoutPlan(0, 10, 3, 2, 4, 2)

@@ -62,12 +62,20 @@ class WorkoutSessionModule : Module() {
   private fun sessionIntent(context: android.content.Context, action: String, configuration: Map<String, Any?>) =
     Intent(context, WorkoutSessionService::class.java)
       .setAction(action)
+      .putExtra(WorkoutSessionService.EXTRA_WORKOUT_NAME, configuration["name"] as? String ?: "Workout")
       .putExtra(WorkoutSessionService.EXTRA_INITIAL_COUNTDOWN_SECONDS, configuration.long("initialCountdownSeconds"))
       .putExtra(WorkoutSessionService.EXTRA_EXERCISE_INTERVAL_SECONDS, configuration.long("exerciseIntervalSeconds"))
       .putExtra(WorkoutSessionService.EXTRA_REST_INTERVAL_SECONDS, configuration.long("restIntervalSeconds"))
       .putExtra(WorkoutSessionService.EXTRA_SETS_PER_CYCLE, configuration.int("setsPerCycle"))
       .putExtra(WorkoutSessionService.EXTRA_RECOVERY_INTERVAL_SECONDS, configuration.long("recoveryIntervalSeconds"))
       .putExtra(WorkoutSessionService.EXTRA_NUMBER_OF_CYCLES, configuration.int("numberOfCycles"))
+      .putExtra(WorkoutSessionService.EXTRA_VOICE_CUES, configuration.audioPreference("voiceCues"))
+      .putExtra(WorkoutSessionService.EXTRA_COUNTDOWN_BEEPS, configuration.audioPreference("finalCountdownBeeps"))
+
+  private fun Map<String, Any?>.audioPreference(key: String): Boolean {
+    val preferences = this["audioPreferences"] as? Map<*, *> ?: return true
+    return preferences[key] as? Boolean ?: true
+  }
 
   private fun Map<String, Any?>.long(key: String): Long {
     val value = this[key] as? Number ?: error("Missing numeric workout field: $key")
