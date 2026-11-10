@@ -12,6 +12,8 @@
 
 > This document is the working product and implementation plan. Items marked **Decision to confirm** should be resolved before the affected implementation phase. Defaults below make the plan actionable while preserving those decisions for review.
 
+**Implementation status (2026-11-10):** The shared workout model, validation, duration calculation, formatting, and deterministic phase state machine have unit coverage. The Android foreground service receives workout configuration and owns phase deadlines and transitions using elapsed realtime. The API 37 emulator has verified the earlier timer to completion while locked and the current phase service changing phases and updating its notification while locked. Physical-device reliability, a full locked workout, audio, and call interruption behavior remain unverified. The Android service currently declares `specialUse` for a user-started timer; Google Play reviews this justification, so confirm release-policy eligibility before committing to a store release.
+
 ---
 
 # 1. Project Overview

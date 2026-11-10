@@ -12,6 +12,7 @@ expo-env.d.ts
 # Keep custom native module source under modules/ tracked instead.
 /android
 /ios
+**/build/
 .kotlin/
 *.orig.*
 

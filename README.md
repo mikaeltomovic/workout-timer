@@ -4,7 +4,7 @@ An offline-first interval workout timer for Android, planned with a shared React
 
 ## Project status
 
-The initial Expo project scaffold is in place. Product requirements and phased implementation details are in [PROJECT-PLAN.md](PROJECT-PLAN.md). Workout features have not been implemented yet.
+The shared workout model, validation, duration calculation, duration display, and deterministic phase state machine are implemented and covered by unit tests. The Android foreground service receives workout configuration and owns phase deadlines and transitions, service snapshots, and notification controls. The API 37 emulator has verified the earlier timer to completion while locked and the current phase service changing phases and updating its notification while locked. Physical-device reliability, full locked-workout behavior, and audio checks are still outstanding. Product requirements and phased implementation details are in [PROJECT-PLAN.md](PROJECT-PLAN.md).
 
 ## Planned capabilities
 
@@ -43,7 +43,7 @@ For a local Android development build:
 npx expo run:android
 ```
 
-The app uses Expo Router with routes under `src/app`. The template's starter UI is temporary and will be replaced as product screens are implemented.
+The app uses Expo Router with routes under `src/app`. On Android, the home screen currently exposes a two-cycle sample workout for exercising the native service; this is temporary development UI, not the finished workout library.
 
 ### Native project workflow
 
@@ -51,7 +51,24 @@ The project uses Expo Continuous Native Generation (CNG). Generated `android/` a
 
 ### Builds and tests
 
-Release build, lint, and test workflows will be finalized as Phase 1 continues. See [PROJECT-PLAN.md](PROJECT-PLAN.md) for implementation phases and acceptance criteria. Cloud builds are optional; Android builds can be performed locally.
+Run the shared domain unit tests and static checks with:
+
+```sh
+npm test -- --runInBand
+npx tsc --noEmit
+npm run lint
+```
+
+The test suite uses Jest with Expo's Jest preset. Domain tests use deterministic timestamps as a controllable monotonic clock. Run the native Android phase-rule unit tests with:
+
+```sh
+cd android
+./gradlew :workout-session:testDebugUnitTest
+```
+
+Release build workflows will be finalized as Phase 1 continues. See [PROJECT-PLAN.md](PROJECT-PLAN.md) for implementation phases and acceptance criteria. Cloud builds are optional; Android builds can be performed locally.
+
+Custom native Android source lives in `modules/workout-session`; generated `android/` and `ios/` directories remain ignored under the Expo Continuous Native Generation workflow. The foreground service currently uses Android's `specialUse` type for a user-started workout timer. Google Play reviews the declared reason for this type; release eligibility must be checked against current Play policy. Physical-device checks for lock-screen timing, notification behavior, audio mixing, and interruptions are still outstanding.
 
 ## License
 
